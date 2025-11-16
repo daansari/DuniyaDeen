@@ -9,10 +9,20 @@ final class PermissionViewModel: ObservableObject {
         self.interactor = interactor
     }
 
-    @MainActor
     func refreshAll() async {
-        let newModel = await interactor.checkAllStatus()
-        self.model = newModel
+        // Perform the heavy check off the main actor with an explicit weak self capture
+        let newModel = await Task.detached(priority: .utility) { [weak self] () -> PermissionModel in
+            guard let self = self else {
+                // If the view model was deallocated, return an empty/default model
+                return await PermissionModel()
+            }
+            return await self.interactor.checkAllStatus()
+        }.value
+
+        // Publish a single consolidated update on the main actor
+        await MainActor.run {
+            self.model = newModel
+        }
     }
 
     @MainActor

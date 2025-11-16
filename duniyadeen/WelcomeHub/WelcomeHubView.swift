@@ -99,10 +99,7 @@ struct WelcomeHubView: View {
                             .shadow(color: AppTheme.palette.accentSecondary.opacity(0.35), radius: 16, y: 8)
                         }
 
-                        NavigationLink(destination: PermissionView()
-                            .toolbar(.hidden, for: .navigationBar)
-                            .navigationBarBackButtonHidden(true)
-                        ) {
+                        NavigationLink(destination: PermissionView()) {
                             Text("Continue as Guest")
                                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                                 .foregroundStyle(
