@@ -232,6 +232,13 @@ struct PermissionView: View {
         }
         .task {
             await viewModel.refreshAll()
+            if viewModel.model.location.servicesEnabled == true, viewModel.model.location.status == .whenInUse {
+                busyPermission = .location
+                Task {
+                    await viewModel.requestLocation()
+                    busyPermission = nil
+                }
+            }
         }
     }
 

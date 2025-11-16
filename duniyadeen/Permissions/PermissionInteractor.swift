@@ -88,12 +88,22 @@ final class PermissionInteractor: PermissionInteracting {
         switch status {
         case .notDetermined:
             model.location.servicesEnabled = nil
-        case .denied, .restricted:
+            model.location.status = .notDetermined
+        case .denied:
             model.location.servicesEnabled = false
-        case .authorizedAlways, .authorizedWhenInUse:
+            model.location.status = .denied
+        case .restricted:
+            model.location.servicesEnabled = false
+            model.location.status = .restricted
+        case .authorizedAlways:
             model.location.servicesEnabled = true
+            model.location.status = .always
+        case .authorizedWhenInUse:
+            model.location.servicesEnabled = true
+            model.location.status = .whenInUse
         @unknown default:
             model.location.servicesEnabled = nil
+            model.location.status = .notDetermined
         }
 
         model.location.precise = (manager.accuracyAuthorization == .fullAccuracy)
@@ -155,8 +165,8 @@ final class PermissionInteractor: PermissionInteracting {
         let tempManager = CLLocationManager()
         let current: CLAuthorizationStatus
         current = tempManager.authorizationStatus
-        // If already determined, don't prompt again; just reflect current status
-        guard current == .notDetermined else {
+        // If already determined or is always, don't prompt again; just reflect current status
+        guard current == .notDetermined || current == .authorizedWhenInUse else {
             let model = await checkLocationCurrentStatus()
             return model
         }
@@ -177,21 +187,35 @@ final class PermissionInteractor: PermissionInteracting {
                 continuation.resume(returning: status)
             }
             manager.delegate = proxy
-            manager.requestAlwaysAuthorization()
+            if current == .authorizedWhenInUse {
+                manager.requestAlwaysAuthorization()
+            } else {
+                manager.requestWhenInUseAuthorization()
+            }
         }
 
         // Release proxy after we have a definitive status to avoid retaining it unnecessarily
         self.locationAuthProxy = nil
 
         switch status {
-        case .denied, .restricted:
-            model.location.servicesEnabled = false
-        case .authorizedAlways, .authorizedWhenInUse:
-            model.location.servicesEnabled = true
         case .notDetermined:
             model.location.servicesEnabled = nil
+            model.location.status = .notDetermined
+        case .denied:
+            model.location.servicesEnabled = false
+            model.location.status = .denied
+        case .restricted:
+            model.location.servicesEnabled = false
+            model.location.status = .restricted
+        case .authorizedAlways:
+            model.location.servicesEnabled = true
+            model.location.status = .always
+        case .authorizedWhenInUse:
+            model.location.servicesEnabled = true
+            model.location.status = .whenInUse
         @unknown default:
             model.location.servicesEnabled = nil
+            model.location.status = .notDetermined
         }
 
         model.location.precise = (manager.accuracyAuthorization == .fullAccuracy)
