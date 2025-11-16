@@ -192,12 +192,10 @@ struct WelcomeHub: View {
     
     var body: some View {
         ZStack {
-//            linearGradientView()
-            
             GeometryReader { geo in
                 linearGradientView()
-//                    .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
-//                    .offset(y: -geo.size.height * 0.25)
+                    .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
+                    .offset(y: -geo.size.height * 0.25)
                 
                 PastelBackground()
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
