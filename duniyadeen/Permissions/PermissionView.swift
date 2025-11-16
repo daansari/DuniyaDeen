@@ -127,12 +127,19 @@ struct PermissionView: View {
                                     isBusy: busyPermission == .microphone,
                                     isActionable: true
                                 ) {
-                                    busyPermission = .microphone
-                                    Task {
-                                        let newModel = await interactor.requestMicrophone()
-                                        await MainActor.run {
-                                            model = newModel
-                                            busyPermission = nil
+                                    // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
+                                    if model.microphoneAuthorized == false {
+                                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                                            openURL(url)
+                                        }
+                                    } else if model.microphoneAuthorized == nil {
+                                        busyPermission = .microphone
+                                        Task {
+                                            let newModel = await interactor.requestMicrophone()
+                                            await MainActor.run {
+                                                model = newModel
+                                                busyPermission = nil
+                                            }
                                         }
                                     }
                                 }
@@ -145,12 +152,19 @@ struct PermissionView: View {
                                     isBusy: busyPermission == .speech,
                                     isActionable: true
                                 ) {
-                                    busyPermission = .speech
-                                    Task {
-                                        let newModel = await interactor.requestSpeech()
-                                        await MainActor.run {
-                                            model = newModel
-                                            busyPermission = nil
+                                    // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
+                                    if model.speechAuthorized == false {
+                                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                                            openURL(url)
+                                        }
+                                    } else if model.speechAuthorized == nil {
+                                        busyPermission = .speech
+                                        Task {
+                                            let newModel = await interactor.requestSpeech()
+                                            await MainActor.run {
+                                                model = newModel
+                                                busyPermission = nil
+                                            }
                                         }
                                     }
                                 }

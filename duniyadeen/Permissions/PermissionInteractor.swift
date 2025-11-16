@@ -3,6 +3,8 @@ import EventKit
 import UserNotifications
 import Speech
 import CoreLocation
+import AVFoundation
+import AVFAudio
 
 // MARK: - Interactor
 protocol PermissionInteracting {
@@ -99,20 +101,38 @@ final class PermissionInteractor: PermissionInteracting {
             model.locationAuthorized = nil
         }
 
-        if #available(iOS 14.0, *) {
-            model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
-        } else {
-            model.preciseLocationEnabled = nil
-        }
+        model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
 
         return model
     }
     
     func checkMicrophoneCurrentStatus() async -> PermissionModel {
+        let permission = AVAudioApplication.shared.recordPermission
+        switch permission {
+        case .undetermined:
+            model.microphoneAuthorized = nil
+        case .denied:
+            model.microphoneAuthorized = false
+        case .granted:
+            model.microphoneAuthorized = true
+        @unknown default:
+            model.microphoneAuthorized = nil
+        }
         return model
     }
     
     func checkSpeechCurrentStatus() async -> PermissionModel {
+        let status = SFSpeechRecognizer.authorizationStatus()
+        switch status {
+        case .notDetermined:
+            model.speechAuthorized = nil
+        case .denied, .restricted:
+            model.speechAuthorized = false
+        case .authorized:
+            model.speechAuthorized = true
+        @unknown default:
+            model.speechAuthorized = nil
+        }
         return model
     }
 
@@ -179,28 +199,45 @@ final class PermissionInteractor: PermissionInteracting {
             model.locationAuthorized = nil
         }
 
-        if #available(iOS 14.0, *) {
-            model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
-        } else {
-            model.preciseLocationEnabled = nil
-        }
+        model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
 
         return model
     }
 
     func requestMicrophone() async -> PermissionModel {
         model.isRequestInFlight = true
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        model.isRequestInFlight = false
-        model.microphoneAuthorized = true
+        defer { model.isRequestInFlight = false }
+
+        let granted: Bool = await withCheckedContinuation { continuation in
+            AVAudioApplication.requestRecordPermission { allowed in
+                continuation.resume(returning: allowed)
+            }
+        }
+        model.microphoneAuthorized = granted
         return model
     }
 
     func requestSpeech() async -> PermissionModel {
         model.isRequestInFlight = true
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        model.isRequestInFlight = false
-        model.speechAuthorized = true
+        defer { model.isRequestInFlight = false }
+
+        let status: SFSpeechRecognizerAuthorizationStatus = await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { status in
+                continuation.resume(returning: status)
+            }
+        }
+
+        switch status {
+        case .authorized:
+            model.speechAuthorized = true
+        case .denied, .restricted:
+            model.speechAuthorized = false
+        case .notDetermined:
+            model.speechAuthorized = nil
+        @unknown default:
+            model.speechAuthorized = nil
+        }
+
         return model
     }
     
