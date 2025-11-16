@@ -6,6 +6,10 @@
 //
 
 import SwiftUI
+import Combine
+#if canImport(CoreMotion)
+import CoreMotion
+#endif
 
 // MARK: - Theme & Palette
 struct Palette {
@@ -30,6 +34,41 @@ struct Theme {
 
 // Shared app theme instance (can be moved to an Environment later)
 private let AppTheme = Theme()
+
+#if canImport(CoreMotion)
+final class MotionManager: ObservableObject {
+    private let manager = CMMotionManager()
+    @Published var roll: Double = 0
+    @Published var pitch: Double = 0
+    
+    private var filteredRoll: Double = 0
+    private var filteredPitch: Double = 0
+    private let smoothingFactor: Double = 0.12 // lower = smoother
+
+    init() {
+        start()
+    }
+
+    private func start() {
+        guard manager.isDeviceMotionAvailable else { return }
+        manager.deviceMotionUpdateInterval = 1.0 / 60.0
+        manager.startDeviceMotionUpdates(to: .main) { [weak self] motion, _ in
+            guard let self = self, let m = motion else { return }
+            // Low-pass filter to smooth jitter
+            let newRoll = m.attitude.roll
+            let newPitch = m.attitude.pitch
+            self.filteredRoll = self.filteredRoll + self.smoothingFactor * (newRoll - self.filteredRoll)
+            self.filteredPitch = self.filteredPitch + self.smoothingFactor * (newPitch - self.filteredPitch)
+            self.roll = self.filteredRoll
+            self.pitch = self.filteredPitch
+        }
+    }
+
+    deinit {
+        manager.stopDeviceMotionUpdates()
+    }
+}
+#endif
 
 // MARK: - Shared UI
 struct ConcentricRings: View {
@@ -163,6 +202,10 @@ struct PastelBackground: View {
 
 // MARK: - WelcomeHub
 struct WelcomeHub: View {
+#if canImport(CoreMotion)
+    @StateObject private var motion = MotionManager()
+#endif
+
     fileprivate func linearGradientView() -> some View {
         return LinearGradient(
             colors: [
@@ -199,7 +242,16 @@ struct WelcomeHub: View {
                 
                 PastelBackground()
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
+#if canImport(CoreMotion)
+                    // Subtle parallax based on device motion
+                    .offset(x: CGFloat(motion.roll) * 20, y: -geo.size.height * 0.15 + CGFloat(motion.pitch) * 20)
+                    .rotation3DEffect(.degrees(motion.pitch * 8), axis: (x: 1, y: 0, z: 0), perspective: 0.6)
+                    .rotation3DEffect(.degrees(-motion.roll * 8), axis: (x: 0, y: 1, z: 0), perspective: 0.6)
+                    .animation(.smooth(duration: 0.18), value: motion.pitch)
+                    .animation(.smooth(duration: 0.18), value: motion.roll)
+#else
                     .offset(y: -geo.size.height * 0.15)
+#endif
                     .edgesIgnoringSafeArea(.all)
                 
                 // Placeholder foreground content – replace with your hub UI
@@ -225,6 +277,11 @@ struct WelcomeHub: View {
                             .scaledToFit()
                             .frame(width: 96, height: 96)
                             .shadow(color: Color.black.opacity(0.25), radius: 14, y: 6)
+                            .offset(x: CGFloat(motion.roll) * 20, y: CGFloat(motion.pitch) * 20)
+                            .rotation3DEffect(.degrees(motion.pitch * 8), axis: (x: 1, y: 0, z: 0), perspective: 0.6)
+                            .rotation3DEffect(.degrees(-motion.roll * 8), axis: (x: 0, y: 1, z: 0), perspective: 0.6)
+                            .animation(.smooth(duration: 0.18), value: motion.pitch)
+                            .animation(.smooth(duration: 0.18), value: motion.roll)
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
@@ -239,16 +296,44 @@ struct WelcomeHub: View {
                         }
                         .buttonStyle(CapsuleOutlineButtonStyle())
 
-                        Button("Register") {
+                        Button(action: {
                             // TODO: handle register
+                        }) {
+                            Text("Register")
+                                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .contentShape(Capsule())
                         }
-                        .buttonStyle(CapsuleFillButtonStyle())
+                        .background(
+                            LinearGradient(
+                                colors: [AppTheme.palette.accentPrimary, AppTheme.palette.accentSecondary],
+                                startPoint: UnitPoint(x: max(0, min(1, 0.2 + CGFloat(motion.roll) * 0.25)), y: 0.5),
+                                endPoint: UnitPoint(x: max(0, min(1, 0.8 + CGFloat(motion.roll) * 0.25)), y: 0.5)
+                            )
+                        )
+                        .clipShape(Capsule())
+                        .shadow(color: AppTheme.palette.accentSecondary.opacity(0.35), radius: 16, y: 8)
                     }
 
-                    Button("Continue as Guest") {
+                    Button(action: {
                         // TODO: handle guest flow
+                    }) {
+                        Text("Continue as Guest")
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [AppTheme.palette.accentPrimary, AppTheme.palette.accentSecondary],
+                                    startPoint: UnitPoint(x: max(0, min(1, 0.3 + CGFloat(motion.roll) * 0.25)), y: 0.5),
+                                    endPoint: UnitPoint(x: max(0, min(1, 0.7 + CGFloat(motion.roll) * 0.25)), y: 0.5)
+                                )
+                            )
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 8)
+                            .background(Color.clear)
+                            .contentShape(Rectangle())
                     }
-                    .buttonStyle(TertiaryTextButtonStyle())
                     .padding(.top, 4)
                 }
                 .padding(.horizontal, 24)
