@@ -6,6 +6,7 @@ struct PermissionModel: Equatable {
     var locationAuthorized: Bool? = nil
     var microphoneAuthorized: Bool? = nil
     var speechAuthorized: Bool? = nil
+    var calendarWriteAuthorized: Bool? = nil
     var isRequestInFlight: Bool = false
     var errorMessage: String? = nil
 
@@ -16,3 +17,4 @@ struct PermissionModel: Equatable {
         && (speechAuthorized ?? false)
     }
 }
+

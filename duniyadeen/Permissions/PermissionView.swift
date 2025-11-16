@@ -75,11 +75,16 @@ struct PermissionView: View {
                                 permissionCard(
                                     iconName: "calendar",
                                     title: "Calendar Access",
-                                    description: "Grant calendar access to help schedule, track events, and receive smart reminders.",
-                                    status: nil,
-                                    isBusy: false,
-                                    isActionable: false,
-                                    action: {}
+                                    description: "Grant calendar write-only access to add events from the app without reading your calendars.",
+                                    status: model.calendarWriteAuthorized,
+                                    isBusy: model.isRequestInFlight,
+                                    isActionable: true,
+                                    action: {
+                                        Task {
+                                            let newModel = await interactor.requestCalendarWriteOnly()
+                                            await MainActor.run { model = newModel }
+                                        }
+                                    }
                                 )
 
                                 permissionCard(
@@ -227,7 +232,7 @@ struct PermissionView: View {
                 Button(action: action) {
                     HStack(spacing: 8) {
                         if isBusy && status != true { ProgressView().tint(Color("BaseTextColor")) }
-                        Text(status == true ? "Granted" : "Allow")
+                        Text(statusText(for: status))
                             .font(.subheadline.weight(.semibold))
                     }
                     .padding(.horizontal, 14)
@@ -284,9 +289,9 @@ struct PermissionView: View {
 
     private func statusText(for status: Bool?) -> String {
         switch status {
-        case .some(true): return "Enabled"
+        case .some(true): return "Granted"
         case .some(false): return "Denied"
-        case .none: return "Not determined"
+        case .none: return "Allow"
         }
     }
 }
@@ -294,3 +299,4 @@ struct PermissionView: View {
 #Preview("Permission View") {
     PermissionView()
 }
+
