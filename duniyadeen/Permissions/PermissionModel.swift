@@ -41,6 +41,7 @@ struct PermissionModel: Equatable {
         && (location.isAuthorized ?? false)
         && (microphoneAuthorized ?? false)
         && (speechAuthorized ?? false)
+        && (calendarWriteAuthorized ?? false)
     }
 }
 

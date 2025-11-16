@@ -76,14 +76,24 @@ struct CalendarView: View {
 
             // Preconfigure a new event (optional)
             let event = EKEvent(eventStore: eventStore)
+//            event.calendar = eventStore.defaultCalendarForNewEvents
             event.isAllDay = true
             event.title = "New Event"
             // Start 3 days from now
-            event.startDate = Date().addingTimeInterval(3 * 24 * 60 * 60)
-            // End of the same date
-            event.endDate = event.startDate
-            // Set alert on the day of event at 9 am
-            event.alarms = [EKAlarm(absoluteDate: event.startDate.addingTimeInterval(9 * 60 * 60))]
+            let tomorrow = Calendar.current.date(byAdding: .day, value: 3, to: Date())!
+            event.startDate = Calendar.current.startOfDay(for: tomorrow)
+            event.endDate = Calendar.current.date(byAdding: .day, value: 1, to: event.startDate)!
+            // Set alert use relativeOffset of 9 hours on the day of the event
+            // Add an alarm with a relative offset (e.g., 30 minutes before the event start time)
+            // Note: The system will adjust this for all-day events according to user's default settings
+            // or apply the relative offset at 9:00 AM on the event day if no time is specified.
+//            let alarmOffset = 9 * 60.0 * 60.0 // 30 minutes after
+//            let alarm = EKAlarm(relativeOffset: alarmOffset)
+//            event.alarms = [alarm]
+            
+            let alarmOffset = -30.0 * 60.0 // 30 minutes before
+            let alarm = EKAlarm(relativeOffset: alarmOffset)
+            event.alarms = [alarm]
             vc.event = event
             return vc
         }

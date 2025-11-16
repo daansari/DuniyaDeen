@@ -212,7 +212,7 @@ struct PermissionView: View {
                         )
                         .clipShape(Capsule())
                         .shadow(color: AppTheme.palette.accentSecondary.opacity(0.35), radius: 16, y: 8)
-                        .disabled(viewModel.model.isRequestInFlight && !viewModel.model.allGranted)
+//                        .disabled(viewModel.model.isRequestInFlight && !viewModel.model.allGranted)
                     }
                     .padding(.horizontal, 20)
 //                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 12))
