@@ -2,6 +2,7 @@ import Foundation
 import EventKit
 import UserNotifications
 import Speech
+import CoreLocation
 
 // MARK: - Interactor
 protocol PermissionInteracting {
@@ -18,8 +19,22 @@ protocol PermissionInteracting {
     func requestCalendarWriteOnly() async -> PermissionModel
 }
 
+private final class LocationAuthProxy: NSObject, CLLocationManagerDelegate {
+    var onChange: ((CLLocationManager) -> Void)?
+
+    @available(iOS 14.0, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        onChange?(manager)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        onChange?(manager)
+    }
+}
+
 final class PermissionInteractor: PermissionInteracting {
     private var model = PermissionModel()
+    private var locationAuthProxy: LocationAuthProxy? = nil
     
     func checkAllStatus() async -> PermissionModel {
         var model = await self.checkCalendarCurrentStatus()
@@ -70,6 +85,26 @@ final class PermissionInteractor: PermissionInteracting {
     }
     
     func checkLocationCurrentStatus() async -> PermissionModel {
+        let manager = CLLocationManager()
+        let status: CLAuthorizationStatus
+        status = manager.authorizationStatus
+        switch status {
+        case .notDetermined:
+            model.locationAuthorized = nil
+        case .denied, .restricted:
+            model.locationAuthorized = false
+        case .authorizedAlways, .authorizedWhenInUse:
+            model.locationAuthorized = true
+        @unknown default:
+            model.locationAuthorized = nil
+        }
+
+        if #available(iOS 14.0, *) {
+            model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
+        } else {
+            model.preciseLocationEnabled = nil
+        }
+
         return model
     }
     
@@ -100,10 +135,56 @@ final class PermissionInteractor: PermissionInteracting {
 
     func requestLocation() async -> PermissionModel {
         model.isRequestInFlight = true
-        // Simulate async request
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        model.isRequestInFlight = false
-        model.locationAuthorized = true
+        defer { model.isRequestInFlight = false }
+
+        let tempManager = CLLocationManager()
+        let current: CLAuthorizationStatus
+        current = tempManager.authorizationStatus
+        // If already determined, don't prompt again; just reflect current status
+        guard current == .notDetermined else {
+            let model = await checkLocationCurrentStatus()
+            return model
+        }
+
+        // Request When-In-Use authorization and await delegate callback
+        let manager = CLLocationManager()
+        let proxy = LocationAuthProxy()
+        self.locationAuthProxy = proxy
+
+        let status: CLAuthorizationStatus = await withCheckedContinuation { continuation in
+            var didResume = false
+            proxy.onChange = { mgr in
+                let status = mgr.authorizationStatus
+                // Only resume once the user has responded (status changes away from .notDetermined)
+                guard status != .notDetermined else { return }
+                guard !didResume else { return }
+                didResume = true
+                continuation.resume(returning: status)
+            }
+            manager.delegate = proxy
+            manager.requestWhenInUseAuthorization()
+        }
+
+        // Release proxy after we have a definitive status to avoid retaining it unnecessarily
+        self.locationAuthProxy = nil
+
+        switch status {
+        case .denied, .restricted:
+            model.locationAuthorized = false
+        case .authorizedAlways, .authorizedWhenInUse:
+            model.locationAuthorized = true
+        case .notDetermined:
+            model.locationAuthorized = nil
+        @unknown default:
+            model.locationAuthorized = nil
+        }
+
+        if #available(iOS 14.0, *) {
+            model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
+        } else {
+            model.preciseLocationEnabled = nil
+        }
+
         return model
     }
 

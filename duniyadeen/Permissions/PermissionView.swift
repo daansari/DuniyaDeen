@@ -102,12 +102,19 @@ struct PermissionView: View {
                                     isBusy: busyPermission == .location,
                                     isActionable: true
                                 ) {
-                                    busyPermission = .location
-                                    Task {
-                                        let newModel = await interactor.requestLocation()
-                                        await MainActor.run {
-                                            model = newModel
-                                            busyPermission = nil
+                                    // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
+                                    if model.locationAuthorized == false {
+                                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                                            openURL(url)
+                                        }
+                                    } else if model.locationAuthorized == nil {
+                                        busyPermission = .location
+                                        Task {
+                                            let newModel = await interactor.requestLocation()
+                                            await MainActor.run {
+                                                model = newModel
+                                                busyPermission = nil
+                                            }
                                         }
                                     }
                                 }
