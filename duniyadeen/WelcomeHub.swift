@@ -67,6 +67,82 @@ struct ConcentricRings: View {
     }
 }
 
+// MARK: - Themed Button Styles
+struct CapsuleFillButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 17, weight: .semibold, design: .rounded))
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(
+                LinearGradient(
+                    colors: [AppTheme.palette.accentPrimary, AppTheme.palette.accentSecondary],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .opacity(configuration.isPressed ? 0.85 : 1)
+            )
+            .clipShape(Capsule())
+            .shadow(color: AppTheme.palette.accentSecondary.opacity(0.35), radius: 16, y: 8)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+    }
+}
+
+struct CapsuleOutlineButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 17, weight: .semibold, design: .rounded))
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(Color.white.opacity(configuration.isPressed ? 0.06 : 0.08))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color.white.opacity(0.25), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.25), radius: 10, y: 6)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+    }
+}
+
+struct CapsuleGhostButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 16, weight: .regular, design: .rounded))
+            .foregroundStyle(Color.white.opacity(0.9))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(Color.white.opacity(configuration.isPressed ? 0.05 : 0.04))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.15), radius: 6, y: 3)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+    }
+}
+
+struct TertiaryTextButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 15, weight: .semibold, design: .rounded))
+            .foregroundStyle(
+                LinearGradient(
+                    colors: [AppTheme.palette.accentPrimary, AppTheme.palette.accentSecondary],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .padding(.vertical, 8)
+            .padding(.horizontal, 8)
+            .contentShape(Rectangle())
+            .opacity(configuration.isPressed ? 0.75 : 1)
+    }
+}
+
 // MARK: - Background
 struct PastelBackground: View {
     var body: some View {
@@ -156,6 +232,30 @@ struct WelcomeHub: View {
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                 .offset(y: -geo.size.height * 0.15)
                 .edgesIgnoringSafeArea(.all)
+                
+                // Bottom actions
+                VStack(spacing: 12) {
+                    HStack(spacing: 12) {
+                        Button("Login") {
+                            // TODO: handle login
+                        }
+                        .buttonStyle(CapsuleOutlineButtonStyle())
+
+                        Button("Register") {
+                            // TODO: handle register
+                        }
+                        .buttonStyle(CapsuleFillButtonStyle())
+                    }
+
+                    Button("Continue as Guest") {
+                        // TODO: handle guest flow
+                    }
+                    .buttonStyle(TertiaryTextButtonStyle())
+                    .padding(.top, 4)
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, max(geo.safeAreaInsets.bottom, 16) + 8)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
     }
@@ -164,3 +264,4 @@ struct WelcomeHub: View {
 #Preview {
     WelcomeHub()
 }
+
