@@ -22,6 +22,11 @@ final class PermissionInteractor: PermissionInteracting {
     private var model = PermissionModel()
     
     func checkAllStatus() async -> PermissionModel {
+        var model = await self.checkCalendarCurrentStatus()
+        model = await self.checkNotificationCurrentStatus()
+        model = await self.checkLocationCurrentStatus()
+        model = await self.checkMicrophoneCurrentStatus()
+        model = await self.checkSpeechCurrentStatus()
         return model
     }
 
@@ -44,6 +49,23 @@ final class PermissionInteractor: PermissionInteracting {
     }
     
     func checkNotificationCurrentStatus() async -> PermissionModel {
+        let center = UNUserNotificationCenter.current()
+        let settings: UNNotificationSettings = await withCheckedContinuation { continuation in
+            center.getNotificationSettings { settings in
+                continuation.resume(returning: settings)
+            }
+        }
+
+        switch settings.authorizationStatus {
+        case .notDetermined:
+            model.notificationsAuthorized = nil
+        case .denied:
+            model.notificationsAuthorized = false
+        case .authorized, .provisional, .ephemeral:
+            model.notificationsAuthorized = true
+        @unknown default:
+            model.notificationsAuthorized = nil
+        }
         return model
     }
     
@@ -61,10 +83,18 @@ final class PermissionInteractor: PermissionInteracting {
 
     func requestNotifications() async -> PermissionModel {
         model.isRequestInFlight = true
-        // Simulate async request
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        model.isRequestInFlight = false
-        model.notificationsAuthorized = true
+        defer { model.isRequestInFlight = false }
+
+        let center = UNUserNotificationCenter.current()
+
+        do {
+            let granted = try await center.requestAuthorization(options: [.alert, .badge, .sound])
+            model.notificationsAuthorized = granted
+        } catch {
+            model.notificationsAuthorized = false
+            model.errorMessage = error.localizedDescription
+        }
+
         return model
     }
 

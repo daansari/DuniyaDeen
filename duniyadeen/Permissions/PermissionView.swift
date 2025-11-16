@@ -77,12 +77,19 @@ struct PermissionView: View {
                                     isBusy: busyPermission == .notifications,
                                     isActionable: true
                                 ) {
-                                    busyPermission = .notifications
-                                    Task {
-                                        let newModel = await interactor.requestNotifications()
-                                        await MainActor.run {
-                                            model = newModel
-                                            busyPermission = nil
+                                    // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
+                                    if model.notificationsAuthorized == false {
+                                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                                            openURL(url)
+                                        }
+                                    } else if model.notificationsAuthorized == nil {
+                                        busyPermission = .notifications
+                                        Task {
+                                            let newModel = await interactor.requestNotifications()
+                                            await MainActor.run {
+                                                model = newModel
+                                                busyPermission = nil
+                                            }
                                         }
                                     }
                                 }
@@ -337,3 +344,4 @@ struct PermissionView: View {
 #Preview("Permission View") {
     PermissionView()
 }
+
