@@ -56,70 +56,72 @@ struct PermissionView: View {
                         }
 
                         // MARK: Cards
-                        VStack(spacing: 14) {
-                            permissionCard(
-                                iconName: "bell.fill",
-                                title: "Notification Access",
-                                description: "Enable notifications to receive timely updates and stay informed about important alerts.",
-                                status: model.notificationsAuthorized,
-                                isBusy: model.isRequestInFlight,
-                                isActionable: true
-                            ) {
-                                Task {
-                                    let newModel = await interactor.requestNotifications()
-                                    await MainActor.run { model = newModel }
+                        GlassEffectContainer(spacing: 18) {
+                            VStack(spacing: 14) {
+                                permissionCard(
+                                    iconName: "bell.fill",
+                                    title: "Notification Access",
+                                    description: "Enable notifications to receive timely updates and stay informed about important alerts.",
+                                    status: model.notificationsAuthorized,
+                                    isBusy: model.isRequestInFlight,
+                                    isActionable: true
+                                ) {
+                                    Task {
+                                        let newModel = await interactor.requestNotifications()
+                                        await MainActor.run { model = newModel }
+                                    }
                                 }
-                            }
 
-                            permissionCard(
-                                iconName: "calendar",
-                                title: "Calendar Access",
-                                description: "Grant calendar access to help schedule, track events, and receive smart reminders.",
-                                status: nil,
-                                isBusy: false,
-                                isActionable: false,
-                                action: {}
-                            )
+                                permissionCard(
+                                    iconName: "calendar",
+                                    title: "Calendar Access",
+                                    description: "Grant calendar access to help schedule, track events, and receive smart reminders.",
+                                    status: nil,
+                                    isBusy: false,
+                                    isActionable: false,
+                                    action: {}
+                                )
 
-                            permissionCard(
-                                iconName: "mappin.and.ellipse",
-                                title: "Location Access",
-                                description: "Allow location access for personalized recommendations and local support based on your area.",
-                                status: model.locationAuthorized,
-                                isBusy: model.isRequestInFlight,
-                                isActionable: true
-                            ) {
-                                Task {
-                                    let newModel = await interactor.requestLocation()
-                                    await MainActor.run { model = newModel }
+                                permissionCard(
+                                    iconName: "mappin.and.ellipse",
+                                    title: "Location Access",
+                                    description: "Allow location access for personalized recommendations and local support based on your area.",
+                                    status: model.locationAuthorized,
+                                    isBusy: model.isRequestInFlight,
+                                    isActionable: true
+                                ) {
+                                    Task {
+                                        let newModel = await interactor.requestLocation()
+                                        await MainActor.run { model = newModel }
+                                    }
                                 }
-                            }
 
-                            permissionCard(
-                                iconName: "mic.fill",
-                                title: "Microphone Access",
-                                description: "Allow microphone access for voice notes and audio features.",
-                                status: model.microphoneAuthorized,
-                                isBusy: model.isRequestInFlight,
-                                isActionable: true
-                            ) {
-                                Task {
-                                    let newModel = await interactor.requestMicrophone()
-                                    await MainActor.run { model = newModel }
+                                permissionCard(
+                                    iconName: "mic.fill",
+                                    title: "Microphone Access",
+                                    description: "Allow microphone access for voice notes and audio features.",
+                                    status: model.microphoneAuthorized,
+                                    isBusy: model.isRequestInFlight,
+                                    isActionable: true
+                                ) {
+                                    Task {
+                                        let newModel = await interactor.requestMicrophone()
+                                        await MainActor.run { model = newModel }
+                                    }
                                 }
-                            }
 
-                            permissionCard(
-                                iconName: "waveform",
-                                title: "Speech Recognizer",
-                                description: "Enable speech recognition for voice commands and transcription.",
-                                status: model.speechAuthorized,
-                                isBusy: model.isRequestInFlight,
-                                isActionable: true
-                            ) {
-                                Task {
-                                    let newModel = await interactor.requestSpeech()
-                                    await MainActor.run { model = newModel }
+                                permissionCard(
+                                    iconName: "waveform",
+                                    title: "Speech Recognizer",
+                                    description: "Enable speech recognition for voice commands and transcription.",
+                                    status: model.speechAuthorized,
+                                    isBusy: model.isRequestInFlight,
+                                    isActionable: true
+                                ) {
+                                    Task {
+                                        let newModel = await interactor.requestSpeech()
+                                        await MainActor.run { model = newModel }
+                                    }
                                 }
                             }
                         }
@@ -159,13 +161,12 @@ struct PermissionView: View {
                     .padding(.top, 16)
                     .background {
                         Rectangle()
-                            .fill(.ultraThinMaterial)
-                            .overlay(
-                                LinearGradient(
-                                    colors: [Color.black.opacity(0.35), Color.black.opacity(0.15)],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
+                            .fill(Color.clear)
+                            .glassEffect(
+                                .regular
+                                    .tint(AppTheme.palette.accentPrimary.opacity(0.18))
+                                    .interactive()
+                                , in: .rect(cornerRadius: 0)
                             )
                             .ignoresSafeArea(edges: .bottom)
                     }
@@ -251,13 +252,11 @@ struct PermissionView: View {
             }
         }
         .padding(14)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .strokeBorder(.white.opacity(0.08))
+        .glassEffect(
+            .regular
+//                .tint(AppTheme.palette.accentPrimary.opacity(0.5))
+                .interactive(),
+            in: .rect(cornerRadius: 20)
         )
     }
 
