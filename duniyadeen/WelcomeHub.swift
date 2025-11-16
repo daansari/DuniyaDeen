@@ -9,14 +9,19 @@ import SwiftUI
 
 // MARK: - Theme & Palette
 struct Palette {
-    // Colors sampled from the provided image: soft white -> blush pink -> warm cream
-    let topWhite = Color.white
-    let midBlush = Color(red: 0.97, green: 0.85, blue: 0.94)   // light pink haze
-    let warmCream = Color(red: 1.00, green: 0.97, blue: 0.88)  // warm pastel near bottom
+    // Dark base inspired by the logo backdrop
+    let darkBase = Color(red: 0.10, green: 0.10, blue: 0.11) // near-black charcoal
+    let darkElevated = Color(red: 0.14, green: 0.14, blue: 0.16)
 
-    // Accent pinks used for the central badge/rings tint if needed
-    let accentPink = Color(red: 0.91, green: 0.36, blue: 0.62)
-    let accentPinkDark = Color(red: 0.78, green: 0.23, blue: 0.52)
+    // Cyan -> Blue gradient inspired by the logo "D"
+    let cyan = Color(red: 0.13, green: 0.93, blue: 0.86)     // bright cyan/teal edge
+    let teal = Color(red: 0.00, green: 0.73, blue: 0.75)
+    let blue = Color(red: 0.06, green: 0.45, blue: 0.86)
+    let deepBlue = Color(red: 0.03, green: 0.25, blue: 0.53)
+
+    // Accents for foreground
+    let accentPrimary = Color(red: 0.00, green: 0.78, blue: 0.82) // teal
+    let accentSecondary = Color(red: 0.06, green: 0.45, blue: 0.86) // blue
 }
 
 struct Theme {
@@ -66,21 +71,40 @@ struct ConcentricRings: View {
 struct PastelBackground: View {
     var body: some View {
         ZStack {
-            // Vertical gradient from white (top) -> blush (mid) -> warm cream (bottom)
             LinearGradient(
                 colors: [
-                    AppTheme.palette.topWhite,
-                    AppTheme.palette.midBlush.opacity(0.85),
-                    AppTheme.palette.warmCream
+                    AppTheme.palette.darkBase,
+                    AppTheme.palette.darkElevated
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-
-            // Subtle concentric rings around center, very low opacity to mimic the image
-            ConcentricRings()
+            .overlay(
+                RadialGradient(
+                    colors: [
+                        AppTheme.palette.cyan.opacity(0.35),
+                        AppTheme.palette.blue.opacity(0.25),
+                        Color.clear
+                    ],
+                    center: .center,
+                    startRadius: 40,
+                    endRadius: 420
+                )
                 .blendMode(.plusLighter)
+                .ignoresSafeArea()
+            )
+
+            ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.12, lineWidth: 70)
+                .foregroundStyle(.white)
+                .blendMode(.plusLighter)
+                .overlay(
+                    ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.10, lineWidth: 2)
+                        .foregroundStyle(
+                            LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.25), AppTheme.palette.blue.opacity(0.20)], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .blendMode(.screen)
+                )
         }
     }
 }
@@ -93,23 +117,28 @@ struct WelcomeHub: View {
 
             // Placeholder foreground content – replace with your hub UI
             VStack(spacing: 16) {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [AppTheme.palette.accentPink, AppTheme.palette.accentPinkDark],
-                            center: .center,
-                            startRadius: 2,
-                            endRadius: 60
+                ZStack {
+                    // Soft glow behind the logo for contrast on dark background
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [AppTheme.palette.accentPrimary.opacity(0.35), Color.clear],
+                                center: .center,
+                                startRadius: 2,
+                                endRadius: 90
+                            )
                         )
-                    )
-                    .frame(width: 88, height: 88)
-                    .overlay {
-                        Text("c")
-                            .font(.system(size: 44, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
-                            .shadow(radius: 4)
-                    }
-                    .shadow(color: AppTheme.palette.accentPink.opacity(0.25), radius: 24, y: 8)
+                        .frame(width: 120, height: 120)
+                        .blur(radius: 6)
+                        .offset(y: 2)
+
+                    // Logo image
+                    Image("AppLogo") // Ensure this asset exists in Assets.xcassets
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 96, height: 96)
+                        .shadow(color: Color.black.opacity(0.35), radius: 14, y: 6)
+                }
             }
         }
     }
@@ -118,3 +147,4 @@ struct WelcomeHub: View {
 #Preview {
     WelcomeHub()
 }
+
