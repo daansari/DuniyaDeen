@@ -7,6 +7,10 @@ import Speech
 protocol PermissionInteracting {
     func checkAllStatus() async -> PermissionModel
     func checkCalendarCurrentStatus() async -> PermissionModel
+    func checkNotificationCurrentStatus() async -> PermissionModel
+    func checkLocationCurrentStatus() async -> PermissionModel
+    func checkMicrophoneCurrentStatus() async -> PermissionModel
+    func checkSpeechCurrentStatus() async -> PermissionModel
     func requestNotifications() async -> PermissionModel
     func requestLocation() async -> PermissionModel
     func requestMicrophone() async -> PermissionModel
@@ -36,6 +40,22 @@ final class PermissionInteractor: PermissionInteracting {
             model.calendarWriteAuthorized = true
         @unknown default: model.calendarWriteAuthorized = nil
         }
+        return model
+    }
+    
+    func checkNotificationCurrentStatus() async -> PermissionModel {
+        return model
+    }
+    
+    func checkLocationCurrentStatus() async -> PermissionModel {
+        return model
+    }
+    
+    func checkMicrophoneCurrentStatus() async -> PermissionModel {
+        return model
+    }
+    
+    func checkSpeechCurrentStatus() async -> PermissionModel {
         return model
     }
 

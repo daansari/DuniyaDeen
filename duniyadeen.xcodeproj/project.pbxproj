@@ -29,9 +29,22 @@
 		D07B61262EC9D61E00003987 /* duniyadeenUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = duniyadeenUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D01FA39B2ECA202400209DB2 /* Exceptions for "duniyadeen" folder in "duniyadeen" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D07B610C2EC9D61D00003987 /* duniyadeen */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D07B610F2EC9D61D00003987 /* duniyadeen */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D01FA39B2ECA202400209DB2 /* Exceptions for "duniyadeen" folder in "duniyadeen" target */,
+			);
 			path = duniyadeen;
 			sourceTree = "<group>";
 		};
@@ -399,8 +412,11 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = duniyadeen/Info.plist;
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Danish: App will create calendar events for reminders.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Danish: App will use the location to provide the most accurate information.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Danish: App will use the location to provide the most accurate information.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Danish: App will use the location to provide the most accurate information.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Danish: App to provide voice based functionalities";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "App to provide on device model driven speech capabilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -448,8 +464,11 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = duniyadeen/Info.plist;
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Danish: App will create calendar events for reminders.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Danish: App will use the location to provide the most accurate information.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Danish: App will use the location to provide the most accurate information.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Danish: App will use the location to provide the most accurate information.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Danish: App to provide voice based functionalities";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "App to provide on device model driven speech capabilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
