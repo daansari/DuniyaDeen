@@ -33,7 +33,7 @@ private let AppTheme = Theme()
 
 // MARK: - Shared UI
 struct ConcentricRings: View {
-    var radii: [CGFloat] = [40, 75, 100]
+    var radii: [CGFloat] = []
     var baseOpacity: Double = 0.10
     var lineWidth: CGFloat = 60
 
@@ -48,7 +48,7 @@ struct ConcentricRings: View {
 
     private func opacity(for index: Int) -> Double {
         // Fade each subsequent ring slightly
-        max(baseOpacity - Double(index) * 0.03, 0.01)
+        max(baseOpacity - Double(index) * 0.05, 0.01)
     }
 
     private func ring(radius: CGFloat, opacity: Double) -> some View {
@@ -71,6 +71,24 @@ struct ConcentricRings: View {
 struct PastelBackground: View {
     var body: some View {
         ZStack {
+            ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.10, lineWidth: 70)
+                .foregroundStyle(.white)
+                .blendMode(.plusLighter)
+                .overlay(
+                    ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.15, lineWidth: 2)
+                        .foregroundStyle(
+                            LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.25), AppTheme.palette.blue.opacity(0.20)], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .blendMode(.screen)
+                )
+        }
+    }
+}
+
+// MARK: - WelcomeHub
+struct WelcomeHub: View {
+    var body: some View {
+        ZStack {
             LinearGradient(
                 colors: [
                     AppTheme.palette.darkBase,
@@ -88,31 +106,14 @@ struct PastelBackground: View {
                         Color.clear
                     ],
                     center: .center,
-                    startRadius: 40,
-                    endRadius: 420
+                    startRadius: 10,
+                    endRadius: 500
                 )
                 .blendMode(.plusLighter)
                 .ignoresSafeArea()
             )
-
-            ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.12, lineWidth: 70)
-                .foregroundStyle(.white)
-                .blendMode(.plusLighter)
-                .overlay(
-                    ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.10, lineWidth: 2)
-                        .foregroundStyle(
-                            LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.25), AppTheme.palette.blue.opacity(0.20)], startPoint: .leading, endPoint: .trailing)
-                        )
-                        .blendMode(.screen)
-                )
-        }
-    }
-}
-
-// MARK: - WelcomeHub
-struct WelcomeHub: View {
-    var body: some View {
-        ZStack {
+            .edgesIgnoringSafeArea(.all)
+            
             PastelBackground()
 
             // Placeholder foreground content – replace with your hub UI
@@ -122,15 +123,15 @@ struct WelcomeHub: View {
                     Circle()
                         .fill(
                             RadialGradient(
-                                colors: [AppTheme.palette.accentPrimary.opacity(0.35), Color.clear],
+                                colors: [AppTheme.palette.accentPrimary.opacity(0.25), Color.clear],
                                 center: .center,
                                 startRadius: 2,
                                 endRadius: 90
                             )
                         )
                         .frame(width: 120, height: 120)
-                        .blur(radius: 6)
-                        .offset(y: 2)
+                        .blur(radius: 10)
+                        .offset(y: 0)
 
                     // Logo image
                     Image("AppLogo") // Ensure this asset exists in Assets.xcassets
