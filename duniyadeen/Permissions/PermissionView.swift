@@ -1,12 +1,23 @@
 import SwiftUI
+import UIKit
 
 // MARK: - View
 struct PermissionView: View {
     @State private var model = PermissionModel()
+    @State private var busyPermission: PermissionKind? = nil
+    @Environment(\.openURL) private var openURL
     let interactor: PermissionInteracting
 
     init(interactor: PermissionInteracting = PermissionInteractor()) {
         self.interactor = interactor
+    }
+
+    private enum PermissionKind {
+        case notifications
+        case calendar
+        case location
+        case microphone
+        case speech
     }
 
     var body: some View {
@@ -63,41 +74,34 @@ struct PermissionView: View {
                                     title: "Notification Access",
                                     description: "Enable notifications to receive timely updates and stay informed about important alerts.",
                                     status: model.notificationsAuthorized,
-                                    isBusy: model.isRequestInFlight,
+                                    isBusy: busyPermission == .notifications,
                                     isActionable: true
                                 ) {
+                                    busyPermission = .notifications
                                     Task {
                                         let newModel = await interactor.requestNotifications()
-                                        await MainActor.run { model = newModel }
-                                    }
-                                }
-
-                                permissionCard(
-                                    iconName: "calendar",
-                                    title: "Calendar Access",
-                                    description: "Grant calendar write-only access to add events from the app without reading your calendars.",
-                                    status: model.calendarWriteAuthorized,
-                                    isBusy: model.isRequestInFlight,
-                                    isActionable: true,
-                                    action: {
-                                        Task {
-                                            let newModel = await interactor.requestCalendarWriteOnly()
-                                            await MainActor.run { model = newModel }
+                                        await MainActor.run {
+                                            model = newModel
+                                            busyPermission = nil
                                         }
                                     }
-                                )
+                                }
 
                                 permissionCard(
                                     iconName: "mappin.and.ellipse",
                                     title: "Location Access",
                                     description: "Allow location access for personalized recommendations and local support based on your area.",
                                     status: model.locationAuthorized,
-                                    isBusy: model.isRequestInFlight,
+                                    isBusy: busyPermission == .location,
                                     isActionable: true
                                 ) {
+                                    busyPermission = .location
                                     Task {
                                         let newModel = await interactor.requestLocation()
-                                        await MainActor.run { model = newModel }
+                                        await MainActor.run {
+                                            model = newModel
+                                            busyPermission = nil
+                                        }
                                     }
                                 }
 
@@ -106,12 +110,16 @@ struct PermissionView: View {
                                     title: "Microphone Access",
                                     description: "Allow microphone access for voice notes and audio features.",
                                     status: model.microphoneAuthorized,
-                                    isBusy: model.isRequestInFlight,
+                                    isBusy: busyPermission == .microphone,
                                     isActionable: true
                                 ) {
+                                    busyPermission = .microphone
                                     Task {
                                         let newModel = await interactor.requestMicrophone()
-                                        await MainActor.run { model = newModel }
+                                        await MainActor.run {
+                                            model = newModel
+                                            busyPermission = nil
+                                        }
                                     }
                                 }
 
@@ -120,14 +128,44 @@ struct PermissionView: View {
                                     title: "Speech Recognizer",
                                     description: "Enable speech recognition for voice commands and transcription.",
                                     status: model.speechAuthorized,
-                                    isBusy: model.isRequestInFlight,
+                                    isBusy: busyPermission == .speech,
                                     isActionable: true
                                 ) {
+                                    busyPermission = .speech
                                     Task {
                                         let newModel = await interactor.requestSpeech()
-                                        await MainActor.run { model = newModel }
+                                        await MainActor.run {
+                                            model = newModel
+                                            busyPermission = nil
+                                        }
                                     }
                                 }
+                                
+                                permissionCard(
+                                    iconName: "calendar",
+                                    title: "Calendar Access",
+                                    description: "Grant calendar write-only access to add events from the app without reading your calendars.",
+                                    status: model.calendarWriteAuthorized,
+                                    isBusy: busyPermission == .calendar,
+                                    isActionable: true,
+                                    action: {
+                                        // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
+                                        if model.calendarWriteAuthorized == false {
+                                            if let url = URL(string: UIApplication.openSettingsURLString) {
+                                                openURL(url)
+                                            }
+                                        } else if model.calendarWriteAuthorized == nil {
+                                            busyPermission = .calendar
+                                            Task {
+                                                let newModel = await interactor.requestCalendarWriteOnly()
+                                                await MainActor.run {
+                                                    model = newModel
+                                                    busyPermission = nil
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
                             }
                         }
 
@@ -299,4 +337,3 @@ struct PermissionView: View {
 #Preview("Permission View") {
     PermissionView()
 }
-
