@@ -63,7 +63,7 @@ struct ConcentricRings: View {
             )
             .frame(width: radius * 2, height: radius * 2.5)
             .foregroundStyle(Color.white.opacity(opacity))
-            .shadow(color: Color.white.opacity(opacity * 0.8), radius: 20)
+            .shadow(color: Color.white.opacity(opacity * 0.5), radius: 20)
     }
 }
 
@@ -116,13 +116,16 @@ struct WelcomeHub: View {
     
     var body: some View {
         ZStack {
-            linearGradientView()
+//            linearGradientView()
             
             GeometryReader { geo in
+                linearGradientView()
+                    .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
+                    .offset(y: -geo.size.height * 0.25)
+                
                 PastelBackground()
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
-                    .offset(y: -geo.size.height * 0.3)
-                    .clipped()
+                    .offset(y: -geo.size.height * 0.25)
                 
                 // Placeholder foreground content – replace with your hub UI
                 VStack(spacing: 16) {
@@ -150,7 +153,7 @@ struct WelcomeHub: View {
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
-                .offset(y: -geo.size.height * 0.3)
+                .offset(y: -geo.size.height * 0.25)
             }
         }
     }
