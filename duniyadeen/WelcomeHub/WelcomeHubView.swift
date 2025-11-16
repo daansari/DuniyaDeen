@@ -235,7 +235,7 @@ struct AppBackgroundGradient: View {
 }
 
 // MARK: - WelcomeHub
-struct WelcomeHub: View {
+struct WelcomeHubView: View {
     @StateObject private var motion = MotionManager()
     @Environment(\.scenePhase) private var scenePhase
 
@@ -361,6 +361,6 @@ struct WelcomeHub: View {
 }
 
 #Preview {
-    WelcomeHub()
+    WelcomeHubView()
 }
 

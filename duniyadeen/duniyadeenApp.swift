@@ -25,7 +25,7 @@ struct duniyadeenApp: App {
 
     var body: some Scene {
         WindowGroup {
-            WelcomeHub()
+            WelcomeHubView()
         }
         .modelContainer(sharedModelContainer)
     }
