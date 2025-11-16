@@ -71,11 +71,11 @@ struct ConcentricRings: View {
 struct PastelBackground: View {
     var body: some View {
         ZStack {
-            ConcentricRings(radii: [120, 200, 280, 360, 440, 520], baseOpacity: 0.08, lineWidth: 70)
+            ConcentricRings(radii: [120, 190, 280, 360, 440, 520, 600, 680, 760, 820], baseOpacity: 0.08, lineWidth: 70)
                 .foregroundStyle(.white)
                 .blendMode(.plusLighter)
                 .overlay(
-                    ConcentricRings(radii: [120, 200, 280, 360, 440, 520], baseOpacity: 0.13, lineWidth: 2)
+                    ConcentricRings(radii: [120, 190, 280, 360, 440, 520, 600, 680, 760, 820], baseOpacity: 0.15, lineWidth: 2)
                         .foregroundStyle(
                             LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.15), AppTheme.palette.blue.opacity(0.10)], startPoint: .leading, endPoint: .trailing)
                         )
@@ -87,59 +87,70 @@ struct PastelBackground: View {
 
 // MARK: - WelcomeHub
 struct WelcomeHub: View {
+    fileprivate func linearGradientView() -> some View {
+        return LinearGradient(
+            colors: [
+                AppTheme.palette.darkBase,
+                AppTheme.palette.darkElevated
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+        .overlay(
+            RadialGradient(
+                colors: [
+                    AppTheme.palette.cyan.opacity(0.35),
+                    AppTheme.palette.blue.opacity(0.25),
+                    Color.clear
+                ],
+                center: .center,
+                startRadius: 10,
+                endRadius: 500
+            )
+            .blendMode(.plusLighter)
+            .ignoresSafeArea()
+        )
+        .edgesIgnoringSafeArea(.all)
+    }
+    
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [
-                    AppTheme.palette.darkBase,
-                    AppTheme.palette.darkElevated
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-            .overlay(
-                RadialGradient(
-                    colors: [
-                        AppTheme.palette.cyan.opacity(0.35),
-                        AppTheme.palette.blue.opacity(0.25),
-                        Color.clear
-                    ],
-                    center: .center,
-                    startRadius: 10,
-                    endRadius: 500
-                )
-                .blendMode(.plusLighter)
-                .ignoresSafeArea()
-            )
-            .edgesIgnoringSafeArea(.all)
+            linearGradientView()
             
-            PastelBackground()
-
-            // Placeholder foreground content – replace with your hub UI
-            VStack(spacing: 16) {
-                ZStack {
-                    // Soft glow behind the logo for contrast on dark background
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                colors: [AppTheme.palette.accentPrimary.opacity(0.25), Color.clear],
-                                center: .center,
-                                startRadius: 0,
-                                endRadius: 200
+            GeometryReader { geo in
+                PastelBackground()
+                    .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
+                    .offset(y: -geo.size.height * 0.3)
+                    .clipped()
+                
+                // Placeholder foreground content – replace with your hub UI
+                VStack(spacing: 16) {
+                    ZStack {
+                        // Soft glow behind the logo for contrast on dark background
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [AppTheme.palette.accentPrimary.opacity(0.25), Color.clear],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 100
+                                )
                             )
-                        )
-                        .frame(width: 120, height: 120)
-                        .blur(radius:25)
-                        .offset(y: 0)
+                            .frame(width: 120, height: 120)
+                            .blur(radius:25)
+                            .offset(y: 0)
 
-                    // Logo image
-                    Image("AppLogo") // Ensure this asset exists in Assets.xcassets
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 96, height: 96)
-                        .shadow(color: Color.black.opacity(0.25), radius: 14, y: 6)
+                        // Logo image
+                        Image("AppLogo") // Ensure this asset exists in Assets.xcassets
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 96, height: 96)
+                            .shadow(color: Color.black.opacity(0.25), radius: 14, y: 6)
+                    }
                 }
+                .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
+                .offset(y: -geo.size.height * 0.3)
             }
         }
     }
@@ -148,4 +159,3 @@ struct WelcomeHub: View {
 #Preview {
     WelcomeHub()
 }
-
