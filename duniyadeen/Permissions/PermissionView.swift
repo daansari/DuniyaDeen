@@ -251,8 +251,8 @@ struct PermissionView: View {
             }
              */
         }
-        .navigationTitle("Permissions")
-        .navigationBarTitleDisplayMode(.inline)
+//        .navigationTitle("Permissions")
+//        .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .navigationDestination(isPresented: $goToCalendar) {

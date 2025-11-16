@@ -30,7 +30,9 @@ struct CalendarView: View {
             .padding(24)
             .frame(maxWidth: 360)
         }
-        .navigationTitle("Calendar")
+//        .navigationTitle("Calendar")
+        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showingEventEditor) {
             EventEditView(eventStore: eventStore) { result in
                 // Handle the result if needed
