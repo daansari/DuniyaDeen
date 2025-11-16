@@ -75,7 +75,7 @@ struct PastelBackground: View {
                 .foregroundStyle(.white)
                 .blendMode(.plusLighter)
                 .overlay(
-                    ConcentricRings(radii: [120, 190, 280, 360, 440, 520, 600, 680, 760, 820], baseOpacity: 0.15, lineWidth: 2)
+                    ConcentricRings(radii: [120, 190, 280, 360, 440, 520, 600, 680, 760, 820], baseOpacity: 0.1, lineWidth: 2)
                         .foregroundStyle(
                             LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.15), AppTheme.palette.blue.opacity(0.10)], startPoint: .leading, endPoint: .trailing)
                         )
@@ -120,12 +120,13 @@ struct WelcomeHub: View {
             
             GeometryReader { geo in
                 linearGradientView()
-                    .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
-                    .offset(y: -geo.size.height * 0.25)
+//                    .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
+//                    .offset(y: -geo.size.height * 0.25)
                 
                 PastelBackground()
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
-                    .offset(y: -geo.size.height * 0.25)
+                    .offset(y: -geo.size.height * 0.15)
+                    .edgesIgnoringSafeArea(.all)
                 
                 // Placeholder foreground content – replace with your hub UI
                 VStack(spacing: 16) {
@@ -153,7 +154,8 @@ struct WelcomeHub: View {
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
-                .offset(y: -geo.size.height * 0.25)
+                .offset(y: -geo.size.height * 0.15)
+                .edgesIgnoringSafeArea(.all)
             }
         }
     }
