@@ -35,7 +35,7 @@ private let AppTheme = Theme()
 struct ConcentricRings: View {
     var radii: [CGFloat] = []
     var baseOpacity: Double = 0.10
-    var lineWidth: CGFloat = 60
+    var lineWidth: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -61,7 +61,7 @@ struct ConcentricRings: View {
                 ),
                 lineWidth: lineWidth
             )
-            .frame(width: radius * 2, height: radius * 2)
+            .frame(width: radius * 2, height: radius * 2.5)
             .foregroundStyle(Color.white.opacity(opacity))
             .shadow(color: Color.white.opacity(opacity * 0.8), radius: 20)
     }
@@ -71,13 +71,13 @@ struct ConcentricRings: View {
 struct PastelBackground: View {
     var body: some View {
         ZStack {
-            ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.10, lineWidth: 70)
+            ConcentricRings(radii: [120, 200, 280, 360, 440, 520], baseOpacity: 0.08, lineWidth: 70)
                 .foregroundStyle(.white)
                 .blendMode(.plusLighter)
                 .overlay(
-                    ConcentricRings(radii: [120, 200, 280], baseOpacity: 0.15, lineWidth: 2)
+                    ConcentricRings(radii: [120, 200, 280, 360, 440, 520], baseOpacity: 0.13, lineWidth: 2)
                         .foregroundStyle(
-                            LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.25), AppTheme.palette.blue.opacity(0.20)], startPoint: .leading, endPoint: .trailing)
+                            LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.15), AppTheme.palette.blue.opacity(0.10)], startPoint: .leading, endPoint: .trailing)
                         )
                         .blendMode(.screen)
                 )
@@ -125,12 +125,12 @@ struct WelcomeHub: View {
                             RadialGradient(
                                 colors: [AppTheme.palette.accentPrimary.opacity(0.25), Color.clear],
                                 center: .center,
-                                startRadius: 2,
-                                endRadius: 90
+                                startRadius: 0,
+                                endRadius: 200
                             )
                         )
                         .frame(width: 120, height: 120)
-                        .blur(radius: 10)
+                        .blur(radius:25)
                         .offset(y: 0)
 
                     // Logo image
@@ -138,7 +138,7 @@ struct WelcomeHub: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 96, height: 96)
-                        .shadow(color: Color.black.opacity(0.35), radius: 14, y: 6)
+                        .shadow(color: Color.black.opacity(0.25), radius: 14, y: 6)
                 }
             }
         }
