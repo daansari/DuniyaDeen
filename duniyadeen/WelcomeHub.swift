@@ -35,7 +35,6 @@ struct Theme {
 // Shared app theme instance (can be moved to an Environment later)
 private let AppTheme = Theme()
 
-#if canImport(CoreMotion)
 final class MotionManager: ObservableObject {
     private let manager = CMMotionManager()
     @Published var roll: Double = 0
@@ -49,8 +48,9 @@ final class MotionManager: ObservableObject {
         start()
     }
 
-    private func start() {
+    func start() {
         guard manager.isDeviceMotionAvailable else { return }
+        guard !manager.isDeviceMotionActive else { return }
         manager.deviceMotionUpdateInterval = 1.0 / 60.0
         manager.startDeviceMotionUpdates(to: .main) { [weak self] motion, _ in
             guard let self = self, let m = motion else { return }
@@ -64,11 +64,15 @@ final class MotionManager: ObservableObject {
         }
     }
 
+    func stop() {
+        guard manager.isDeviceMotionActive else { return }
+        manager.stopDeviceMotionUpdates()
+    }
+
     deinit {
         manager.stopDeviceMotionUpdates()
     }
 }
-#endif
 
 // MARK: - Shared UI
 struct ConcentricRings: View {
@@ -200,14 +204,10 @@ struct PastelBackground: View {
     }
 }
 
-// MARK: - WelcomeHub
-struct WelcomeHub: View {
-#if canImport(CoreMotion)
-    @StateObject private var motion = MotionManager()
-#endif
-
-    fileprivate func linearGradientView() -> some View {
-        return LinearGradient(
+// Reusable gradient background used across views
+struct AppBackgroundGradient: View {
+    var body: some View {
+        LinearGradient(
             colors: [
                 AppTheme.palette.darkBase,
                 AppTheme.palette.darkElevated
@@ -232,11 +232,17 @@ struct WelcomeHub: View {
         )
         .edgesIgnoringSafeArea(.all)
     }
-    
+}
+
+// MARK: - WelcomeHub
+struct WelcomeHub: View {
+    @StateObject private var motion = MotionManager()
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         ZStack {
             GeometryReader { geo in
-                linearGradientView()
+                AppBackgroundGradient()
                     .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
                     .offset(y: -geo.size.height * 0.25)
                 
@@ -341,6 +347,16 @@ struct WelcomeHub: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                motion.start()
+            default:
+                motion.stop()
+            }
+        }
+        .onAppear { motion.start() }
+        .onDisappear { motion.stop() }
     }
 }
 
