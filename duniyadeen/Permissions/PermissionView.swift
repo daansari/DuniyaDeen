@@ -215,10 +215,10 @@ struct PermissionView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color("BaseTextColor"))
                 Text(description)
                     .font(.footnote)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(Color("SecondaryTextColor"))
             }
 
             Spacer(minLength: 8)
@@ -226,7 +226,7 @@ struct PermissionView: View {
             if isActionable {
                 Button(action: action) {
                     HStack(spacing: 8) {
-                        if isBusy && status != true { ProgressView().tint(.white) }
+                        if isBusy && status != true { ProgressView().tint(Color("BaseTextColor")) }
                         Text(status == true ? "Granted" : "Allow")
                             .font(.subheadline.weight(.semibold))
                     }
@@ -236,13 +236,13 @@ struct PermissionView: View {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(.white.opacity(status == true ? 0.12 : 0.22))
                     )
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color("BaseTextColor"))
                 }
                 .disabled(status == true || isBusy)
             } else {
                 Text("Optional")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color("BaseTextColor"))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(
@@ -294,4 +294,3 @@ struct PermissionView: View {
 #Preview("Permission View") {
     PermissionView()
 }
-
