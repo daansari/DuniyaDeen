@@ -399,9 +399,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "App will create calendar events for reminders.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "App will use the location to provide the most accurate information.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "App to provide voice based functionalities";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Danish: App will create calendar events for reminders.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Danish: App will use the location to provide the most accurate information.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Danish: App to provide voice based functionalities";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "App to provide on device model driven speech capabilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -448,9 +448,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "App will create calendar events for reminders.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "App will use the location to provide the most accurate information.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "App to provide voice based functionalities";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Danish: App will create calendar events for reminders.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Danish: App will use the location to provide the most accurate information.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Danish: App to provide voice based functionalities";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "App to provide on device model driven speech capabilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

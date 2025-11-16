@@ -223,7 +223,7 @@ struct PermissionView: View {
             }
         }
         .task {
-            let newModel = await interactor.checkCalendarCurrentStatus()
+            let newModel = await interactor.checkAllStatus()
             await MainActor.run { model = newModel }
         }
     }

@@ -1,8 +1,11 @@
 import Foundation
 import EventKit
+import UserNotifications
+import Speech
 
 // MARK: - Interactor
 protocol PermissionInteracting {
+    func checkAllStatus() async -> PermissionModel
     func checkCalendarCurrentStatus() async -> PermissionModel
     func requestNotifications() async -> PermissionModel
     func requestLocation() async -> PermissionModel
@@ -13,6 +16,10 @@ protocol PermissionInteracting {
 
 final class PermissionInteractor: PermissionInteracting {
     private var model = PermissionModel()
+    
+    func checkAllStatus() async -> PermissionModel {
+        return model
+    }
 
     func checkCalendarCurrentStatus() async -> PermissionModel {
         // Check current permission statuses. Replace with real permission checks as needed.
