@@ -3,7 +3,7 @@ import EventKit
 
 // MARK: - Interactor
 protocol PermissionInteracting {
-    func checkCurrentStatus() async -> PermissionModel
+    func checkCalendarCurrentStatus() async -> PermissionModel
     func requestNotifications() async -> PermissionModel
     func requestLocation() async -> PermissionModel
     func requestMicrophone() async -> PermissionModel
@@ -14,7 +14,7 @@ protocol PermissionInteracting {
 final class PermissionInteractor: PermissionInteracting {
     private var model = PermissionModel()
 
-    func checkCurrentStatus() async -> PermissionModel {
+    func checkCalendarCurrentStatus() async -> PermissionModel {
         // Check current permission statuses. Replace with real permission checks as needed.
         // Calendar write-only status (iOS 17+) or full access fallback
         let status = EKEventStore.authorizationStatus(for: .event)
