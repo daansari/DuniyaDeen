@@ -3,14 +3,9 @@ import UIKit
 
 // MARK: - View
 struct PermissionView: View {
-    @State private var model = PermissionModel()
+    @StateObject private var viewModel = PermissionViewModel()
     @State private var busyPermission: PermissionKind? = nil
     @Environment(\.openURL) private var openURL
-    let interactor: PermissionInteracting
-
-    init(interactor: PermissionInteracting = PermissionInteractor()) {
-        self.interactor = interactor
-    }
 
     private enum PermissionKind {
         case notifications
@@ -73,23 +68,20 @@ struct PermissionView: View {
                                     iconName: "bell.fill",
                                     title: "Notification Access",
                                     description: "Enable notifications to receive timely updates and stay informed about important alerts.",
-                                    status: model.notificationsAuthorized,
+                                    status: viewModel.model.notificationsAuthorized,
                                     isBusy: busyPermission == .notifications,
                                     isActionable: true
                                 ) {
                                     // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
-                                    if model.notificationsAuthorized == false {
+                                    if viewModel.model.notificationsAuthorized == false {
                                         if let url = URL(string: UIApplication.openSettingsURLString) {
                                             openURL(url)
                                         }
-                                    } else if model.notificationsAuthorized == nil {
+                                    } else if viewModel.model.notificationsAuthorized == nil {
                                         busyPermission = .notifications
                                         Task {
-                                            let newModel = await interactor.requestNotifications()
-                                            await MainActor.run {
-                                                model = newModel
-                                                busyPermission = nil
-                                            }
+                                            await viewModel.requestNotifications()
+                                            busyPermission = nil
                                         }
                                     }
                                 }
@@ -98,23 +90,20 @@ struct PermissionView: View {
                                     iconName: "mappin.and.ellipse",
                                     title: "Location Access",
                                     description: "Allow location access for personalized recommendations and local support based on your area.",
-                                    status: model.locationAuthorized,
+                                    status: viewModel.model.location.servicesEnabled,
                                     isBusy: busyPermission == .location,
                                     isActionable: true
                                 ) {
                                     // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
-                                    if model.locationAuthorized == false {
+                                    if viewModel.model.location.servicesEnabled == false {
                                         if let url = URL(string: UIApplication.openSettingsURLString) {
                                             openURL(url)
                                         }
-                                    } else if model.locationAuthorized == nil {
+                                    } else if viewModel.model.location.servicesEnabled == nil {
                                         busyPermission = .location
                                         Task {
-                                            let newModel = await interactor.requestLocation()
-                                            await MainActor.run {
-                                                model = newModel
-                                                busyPermission = nil
-                                            }
+                                            await viewModel.requestLocation()
+                                            busyPermission = nil
                                         }
                                     }
                                 }
@@ -123,23 +112,20 @@ struct PermissionView: View {
                                     iconName: "mic.fill",
                                     title: "Microphone Access",
                                     description: "Allow microphone access for voice notes and audio features.",
-                                    status: model.microphoneAuthorized,
+                                    status: viewModel.model.microphoneAuthorized,
                                     isBusy: busyPermission == .microphone,
                                     isActionable: true
                                 ) {
                                     // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
-                                    if model.microphoneAuthorized == false {
+                                    if viewModel.model.microphoneAuthorized == false {
                                         if let url = URL(string: UIApplication.openSettingsURLString) {
                                             openURL(url)
                                         }
-                                    } else if model.microphoneAuthorized == nil {
+                                    } else if viewModel.model.microphoneAuthorized == nil {
                                         busyPermission = .microphone
                                         Task {
-                                            let newModel = await interactor.requestMicrophone()
-                                            await MainActor.run {
-                                                model = newModel
-                                                busyPermission = nil
-                                            }
+                                            await viewModel.requestMicrophone()
+                                            busyPermission = nil
                                         }
                                     }
                                 }
@@ -148,23 +134,20 @@ struct PermissionView: View {
                                     iconName: "waveform",
                                     title: "Speech Recognizer",
                                     description: "Enable speech recognition for voice commands and transcription.",
-                                    status: model.speechAuthorized,
+                                    status: viewModel.model.speechAuthorized,
                                     isBusy: busyPermission == .speech,
                                     isActionable: true
                                 ) {
                                     // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
-                                    if model.speechAuthorized == false {
+                                    if viewModel.model.speechAuthorized == false {
                                         if let url = URL(string: UIApplication.openSettingsURLString) {
                                             openURL(url)
                                         }
-                                    } else if model.speechAuthorized == nil {
+                                    } else if viewModel.model.speechAuthorized == nil {
                                         busyPermission = .speech
                                         Task {
-                                            let newModel = await interactor.requestSpeech()
-                                            await MainActor.run {
-                                                model = newModel
-                                                busyPermission = nil
-                                            }
+                                            await viewModel.requestSpeech()
+                                            busyPermission = nil
                                         }
                                     }
                                 }
@@ -173,23 +156,20 @@ struct PermissionView: View {
                                     iconName: "calendar",
                                     title: "Calendar Access",
                                     description: "Grant calendar write-only access to add events from the app without reading your calendars.",
-                                    status: model.calendarWriteAuthorized,
+                                    status: viewModel.model.calendarWriteAuthorized,
                                     isBusy: busyPermission == .calendar,
                                     isActionable: true,
                                     action: {
                                         // If denied, take the user to Settings; if not determined, request; if granted, do nothing (button is disabled).
-                                        if model.calendarWriteAuthorized == false {
+                                        if viewModel.model.calendarWriteAuthorized == false {
                                             if let url = URL(string: UIApplication.openSettingsURLString) {
                                                 openURL(url)
                                             }
-                                        } else if model.calendarWriteAuthorized == nil {
+                                        } else if viewModel.model.calendarWriteAuthorized == nil {
                                             busyPermission = .calendar
                                             Task {
-                                                let newModel = await interactor.requestCalendarWriteOnly()
-                                                await MainActor.run {
-                                                    model = newModel
-                                                    busyPermission = nil
-                                                }
+                                                await viewModel.requestCalendarWriteOnly()
+                                                busyPermission = nil
                                             }
                                         }
                                     }
@@ -197,7 +177,7 @@ struct PermissionView: View {
                             }
                         }
 
-                        if let error = model.errorMessage {
+                        if let error = viewModel.model.errorMessage {
                             Text(error)
                                 .foregroundStyle(.red)
                                 .font(.footnote)
@@ -210,7 +190,7 @@ struct PermissionView: View {
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     VStack(spacing: 0) {
                         Button(action: enableAll) {
-                            Text(model.allGranted ? "Continue" : "Enable Permission")
+                            Text(viewModel.model.allGranted ? "Continue" : "Enable Permission")
                                 .font(.system(size: 17, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
@@ -225,7 +205,7 @@ struct PermissionView: View {
                         )
                         .clipShape(Capsule())
                         .shadow(color: AppTheme.palette.accentSecondary.opacity(0.35), radius: 16, y: 8)
-                        .disabled(model.isRequestInFlight)
+                        .disabled(viewModel.model.isRequestInFlight)
                     }
                     .padding(.horizontal, 20)
 //                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 12))
@@ -251,8 +231,7 @@ struct PermissionView: View {
             }
         }
         .task {
-            let newModel = await interactor.checkAllStatus()
-            await MainActor.run { model = newModel }
+            await viewModel.refreshAll()
         }
     }
 
@@ -332,23 +311,19 @@ struct PermissionView: View {
     }
 
     private func enableAll() {
-        guard !model.allGranted else { return }
+        guard !(viewModel.model.allGranted) else { return }
         Task {
-            if model.notificationsAuthorized != true {
-                let m = await interactor.requestNotifications()
-                await MainActor.run { model = m }
+            if viewModel.model.notificationsAuthorized != true {
+                await viewModel.requestNotifications()
             }
-            if model.locationAuthorized != true {
-                let m = await interactor.requestLocation()
-                await MainActor.run { model = m }
+            if viewModel.model.location.servicesEnabled != true {
+                await viewModel.requestLocation()
             }
-            if model.microphoneAuthorized != true {
-                let m = await interactor.requestMicrophone()
-                await MainActor.run { model = m }
+            if viewModel.model.microphoneAuthorized != true {
+                await viewModel.requestMicrophone()
             }
-            if model.speechAuthorized != true {
-                let m = await interactor.requestSpeech()
-                await MainActor.run { model = m }
+            if viewModel.model.speechAuthorized != true {
+                await viewModel.requestSpeech()
             }
         }
     }
@@ -365,4 +340,3 @@ struct PermissionView: View {
 #Preview("Permission View") {
     PermissionView()
 }
-

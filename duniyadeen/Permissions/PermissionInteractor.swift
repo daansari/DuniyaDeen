@@ -24,12 +24,7 @@ protocol PermissionInteracting {
 private final class LocationAuthProxy: NSObject, CLLocationManagerDelegate {
     var onChange: ((CLLocationManager) -> Void)?
 
-    @available(iOS 14.0, *)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        onChange?(manager)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         onChange?(manager)
     }
 }
@@ -92,16 +87,16 @@ final class PermissionInteractor: PermissionInteracting {
         status = manager.authorizationStatus
         switch status {
         case .notDetermined:
-            model.locationAuthorized = nil
+            model.location.servicesEnabled = nil
         case .denied, .restricted:
-            model.locationAuthorized = false
+            model.location.servicesEnabled = false
         case .authorizedAlways, .authorizedWhenInUse:
-            model.locationAuthorized = true
+            model.location.servicesEnabled = true
         @unknown default:
-            model.locationAuthorized = nil
+            model.location.servicesEnabled = nil
         }
 
-        model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
+        model.location.precise = (manager.accuracyAuthorization == .fullAccuracy)
 
         return model
     }
@@ -182,7 +177,7 @@ final class PermissionInteractor: PermissionInteracting {
                 continuation.resume(returning: status)
             }
             manager.delegate = proxy
-            manager.requestWhenInUseAuthorization()
+            manager.requestAlwaysAuthorization()
         }
 
         // Release proxy after we have a definitive status to avoid retaining it unnecessarily
@@ -190,16 +185,16 @@ final class PermissionInteractor: PermissionInteracting {
 
         switch status {
         case .denied, .restricted:
-            model.locationAuthorized = false
+            model.location.servicesEnabled = false
         case .authorizedAlways, .authorizedWhenInUse:
-            model.locationAuthorized = true
+            model.location.servicesEnabled = true
         case .notDetermined:
-            model.locationAuthorized = nil
+            model.location.servicesEnabled = nil
         @unknown default:
-            model.locationAuthorized = nil
+            model.location.servicesEnabled = nil
         }
 
-        model.preciseLocationEnabled = (manager.accuracyAuthorization == .fullAccuracy)
+        model.location.precise = (manager.accuracyAuthorization == .fullAccuracy)
 
         return model
     }
