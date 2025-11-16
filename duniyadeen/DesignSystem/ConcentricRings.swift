@@ -1,48 +1,26 @@
 import SwiftUI
 
-// MARK: - ConcentricRings
+// MARK: - PastelBackground
 struct ConcentricRings: View {
-    var radii: [CGFloat] = []
-    var baseOpacity: Double = 0.10
-    var lineWidth: CGFloat = 0
-
     var body: some View {
         ZStack {
-            ForEach(Array(radii.enumerated()), id: \.offset) { index, radius in
-                ring(radius: radius, opacity: opacity(for: index))
-            }
+            ConcentricRing(radii: [120, 190, 280, 360, 440, 520, 600, 680, 760, 820], baseOpacity: 0.08, lineWidth: 70)
+                .foregroundStyle(.white)
+                .blendMode(.plusLighter)
+                .overlay(
+                    ConcentricRing(radii: [120, 190, 280, 360, 440, 520, 600, 680, 760, 820], baseOpacity: 0.1, lineWidth: 2)
+                        .foregroundStyle(
+                            LinearGradient(colors: [AppTheme.palette.cyan.opacity(0.15), AppTheme.palette.blue.opacity(0.10)], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .blendMode(.screen)
+                )
         }
-        .allowsHitTesting(false)
-    }
-
-    private func opacity(for index: Int) -> Double {
-        // Fade each subsequent ring slightly
-        max(baseOpacity - Double(index) * 0.05, 0.01)
-    }
-
-    private func ring(radius: CGFloat, opacity: Double) -> some View {
-        Circle()
-            .strokeBorder(
-                LinearGradient(
-                    colors: [Color.white.opacity(opacity), Color.clear],
-                    startPoint: .center,
-                    endPoint: .bottom
-                ),
-                lineWidth: lineWidth
-            )
-            .frame(width: radius * 2, height: radius * 2)
-            .foregroundStyle(Color.white.opacity(opacity))
-            .shadow(color: Color.white.opacity(opacity * 0.5), radius: 20)
     }
 }
 
-#Preview("Concentric Rings") {
+#Preview("Pastel Background") {
     ZStack {
         AppBackgroundGradient()
-        ConcentricRings(
-            radii: [120],
-            baseOpacity: 0.08,
-            lineWidth: 70
-        )
+        ConcentricRings()
     }
 }

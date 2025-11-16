@@ -21,7 +21,7 @@ struct WelcomeHubView: View {
                     .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
                     .offset(y: -geo.size.height * 0.25)
                 
-                PastelBackground()
+                ConcentricRings()
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
 #if canImport(CoreMotion)
                     // Subtle parallax based on device motion
