@@ -94,6 +94,34 @@ struct PermissionView: View {
                                     await MainActor.run { model = newModel }
                                 }
                             }
+
+                            permissionCard(
+                                iconName: "mic.fill",
+                                title: "Microphone Access",
+                                description: "Allow microphone access for voice notes and audio features.",
+                                status: model.microphoneAuthorized,
+                                isBusy: model.isRequestInFlight,
+                                isActionable: true
+                            ) {
+                                Task {
+                                    let newModel = await interactor.requestMicrophone()
+                                    await MainActor.run { model = newModel }
+                                }
+                            }
+
+                            permissionCard(
+                                iconName: "waveform",
+                                title: "Speech Recognizer",
+                                description: "Enable speech recognition for voice commands and transcription.",
+                                status: model.speechAuthorized,
+                                isBusy: model.isRequestInFlight,
+                                isActionable: true
+                            ) {
+                                Task {
+                                    let newModel = await interactor.requestSpeech()
+                                    await MainActor.run { model = newModel }
+                                }
+                            }
                         }
 
                         if let error = model.errorMessage {
@@ -101,8 +129,13 @@ struct PermissionView: View {
                                 .foregroundStyle(.red)
                                 .font(.footnote)
                         }
-
-                        // MARK: CTA
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 24))
+                    .padding(.top, 0)
+                }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    VStack(spacing: 0) {
                         Button(action: enableAll) {
                             Text(model.allGranted ? "Continue" : "Enable Permission")
                                 .font(.system(size: 17, weight: .semibold, design: .rounded))
@@ -122,8 +155,26 @@ struct PermissionView: View {
                         .disabled(model.isRequestInFlight)
                     }
                     .padding(.horizontal, 20)
-                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 24))
-                    .padding(.top, 0)
+//                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 12))
+                    .padding(.top, 16)
+                    .background {
+                        Rectangle()
+                            .fill(.ultraThinMaterial)
+                            .overlay(
+                                LinearGradient(
+                                    colors: [Color.black.opacity(0.35), Color.black.opacity(0.15)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .ignoresSafeArea(edges: .bottom)
+                    }
+                    .overlay(
+                        Rectangle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(height: 1),
+                        alignment: .top
+                    )
                 }
             }
         }
@@ -221,6 +272,14 @@ struct PermissionView: View {
                 let m = await interactor.requestLocation()
                 await MainActor.run { model = m }
             }
+            if model.microphoneAuthorized != true {
+                let m = await interactor.requestMicrophone()
+                await MainActor.run { model = m }
+            }
+            if model.speechAuthorized != true {
+                let m = await interactor.requestSpeech()
+                await MainActor.run { model = m }
+            }
         }
     }
 
@@ -236,3 +295,4 @@ struct PermissionView: View {
 #Preview("Permission View") {
     PermissionView()
 }
+

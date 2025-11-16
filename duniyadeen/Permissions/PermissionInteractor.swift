@@ -5,6 +5,8 @@ protocol PermissionInteracting {
     func checkCurrentStatus() async -> PermissionModel
     func requestNotifications() async -> PermissionModel
     func requestLocation() async -> PermissionModel
+    func requestMicrophone() async -> PermissionModel
+    func requestSpeech() async -> PermissionModel
 }
 
 final class PermissionInteractor: PermissionInteracting {
@@ -30,6 +32,22 @@ final class PermissionInteractor: PermissionInteracting {
         try? await Task.sleep(nanoseconds: 500_000_000)
         model.isRequestInFlight = false
         model.locationAuthorized = true
+        return model
+    }
+
+    func requestMicrophone() async -> PermissionModel {
+        model.isRequestInFlight = true
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        model.isRequestInFlight = false
+        model.microphoneAuthorized = true
+        return model
+    }
+
+    func requestSpeech() async -> PermissionModel {
+        model.isRequestInFlight = true
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        model.isRequestInFlight = false
+        model.speechAuthorized = true
         return model
     }
 }
