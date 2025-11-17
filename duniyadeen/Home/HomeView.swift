@@ -82,11 +82,14 @@ private struct HeaderView: View {
 
                 Spacer(minLength: 12)
 
-                HStack(spacing: 10) {
+                // Bottom row of pills: Location left, Alerts + Methods right
+                HStack(spacing: 16) {
                     HeaderPill(systemImage: "location.fill", title: "Auto location")
+                    Spacer(minLength: 0)
                     HeaderPill(systemImage: "bell.fill", title: "Alerts")
                     HeaderPill(systemImage: "link", title: "Methods")
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.top, topInset + 16)
             .padding(.horizontal, 20)
@@ -118,21 +121,22 @@ private struct HeaderPill: View {
     let title: String
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             Image(systemName: systemImage)
                 .imageScale(.medium)
             Text(title)
-                .font(.subheadline)
+                .font(.footnote)
                 .fontWeight(.semibold)
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(.white.opacity(0.95))
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.vertical, 7)
         .background(.ultraThinMaterial, in: Capsule())
         .overlay(
-            Capsule().stroke(.white.opacity(0.25), lineWidth: 1)
+            Capsule().stroke(.white.opacity(0.35), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.08), radius: 8, y: 3)
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+        .contentShape(Capsule())
     }
 }
 
