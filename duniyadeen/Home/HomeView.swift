@@ -12,25 +12,31 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
-        GeometryReader { geo in
-            VStack(spacing: 0) {
-                HeaderView(topInset: geo.safeAreaInsets.top)
-                    .frame(height: 260 + geo.safeAreaInsets.top)
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            cornerRadii: .init(
-                                topLeading: 0,
-                                bottomLeading: 28, bottomTrailing: 28, topTrailing: 0
+        ZStack {
+            // White background underneath everything
+            Color.white
+                .ignoresSafeArea()
+            
+            GeometryReader { geo in
+                VStack(spacing: 0) {
+                    ZStack(alignment: .top) {
+                        HeaderView(topInset: geo.safeAreaInsets.top)
+                            .frame(height: 260 + geo.safeAreaInsets.top)
+                            .clipShape(
+                                UnevenRoundedRectangle(
+                                    cornerRadii: .init(
+                                        topLeading: 0,
+                                        bottomLeading: 28, bottomTrailing: 28, topTrailing: 0
+                                    )
+                                )
                             )
-                        )
-                    )
-                    .shadow(color: Color.black.opacity(0.08), radius: 16, x: 0, y: 6)
-                    .ignoresSafeArea(edges: .top)
-                // Breathing space for future controls that sit on the header edge
-//                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 16))
-                
-                // Placeholder content; we'll build the rest next
-                Spacer()
+                            .ignoresSafeArea(edges: .top)
+                            .shadow(color: .black.opacity(0.4), radius: 12, y: 10)
+                    }
+                    
+                    // Content area will sit on top of the white background
+                    Spacer()
+                }
             }
         }
     }
