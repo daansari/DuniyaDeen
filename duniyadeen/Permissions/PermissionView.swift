@@ -6,6 +6,7 @@ struct PermissionView: View {
     @StateObject private var viewModel = PermissionViewModel()
     @State private var busyPermission: PermissionKind? = nil
     @State private var goToCalendar = false
+    @State private var goToHome = false
     @Environment(\.openURL) private var openURL
 
     private enum PermissionKind {
@@ -192,7 +193,8 @@ struct PermissionView: View {
                     VStack(spacing: 0) {
                         Button(action: {
                             if viewModel.model.allGranted {
-                                goToCalendar = true
+//                                goToCalendar = true
+                                goToHome = true
                             } else {
                                 enableAll()
                             }
@@ -255,8 +257,9 @@ struct PermissionView: View {
 //        .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
-        .navigationDestination(isPresented: $goToCalendar) {
-            CalendarView()
+        .navigationDestination(isPresented: $goToHome) {
+//            CalendarView()
+            HomeView()
         }
     }
 

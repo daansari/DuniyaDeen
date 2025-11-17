@@ -26,9 +26,9 @@ struct HomeView: View {
                     )
                     .shadow(color: Color.black.opacity(0.08), radius: 16, x: 0, y: 6)
                     .ignoresSafeArea(edges: .top)
-                    // Breathing space for future controls that sit on the header edge
-                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 16))
-
+                // Breathing space for future controls that sit on the header edge
+//                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 16))
+                
                 // Placeholder content; we'll build the rest next
                 Spacer()
             }
@@ -38,11 +38,11 @@ struct HomeView: View {
 
 private struct HeaderView: View {
     var topInset: CGFloat
-
+    
     var body: some View {
         ZStack {
             HeaderBackground()
-
+            
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 6) {
@@ -51,11 +51,11 @@ private struct HeaderView: View {
                             .fontWeight(.semibold)
                             .textCase(.uppercase)
                             .foregroundStyle(.white.opacity(0.95))
-
+                        
                         Text("Asr")
                             .font(.system(size: 42, weight: .bold, design: .rounded))
                             .foregroundStyle(.white)
-
+                        
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
                             Text("4:41")
                                 .font(.system(size: 38, weight: .bold, design: .rounded))
@@ -64,24 +64,24 @@ private struct HeaderView: View {
                                 .opacity(0.95)
                         }
                         .foregroundStyle(.white)
-
+                        
                         Text("Starts in 1h 10m")
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundStyle(.white.opacity(0.95))
-
+                        
                         Text("Location · Dubai, UAE")
                             .font(.subheadline)
                             .foregroundStyle(.white.opacity(0.9))
                     }
-
+                    
                     Spacer(minLength: 16)
-
+                    
                     HeaderSun(size: 70)
                 }
-
+                
                 Spacer(minLength: 12)
-
+                
                 // Bottom row of pills: Location left, Alerts + Methods right
                 HStack(spacing: 16) {
                     HeaderPill(systemImage: "location.fill", title: "Auto location")
@@ -100,7 +100,7 @@ private struct HeaderView: View {
 
 private struct HeaderSun: View {
     var size: CGFloat = 110
-
+    
     var body: some View {
         Group {
             Image(systemName: "sun.max.fill")
@@ -119,24 +119,23 @@ private struct HeaderSun: View {
 private struct HeaderPill: View {
     let systemImage: String
     let title: String
-
+    var action: () -> Void = {}
+    
     var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: systemImage)
-                .imageScale(.medium)
-            Text(title)
-                .font(.footnote)
-                .fontWeight(.semibold)
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: systemImage)
+                    .imageScale(.medium)
+                Text(title)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
+            }
+            .foregroundStyle(.white.opacity(0.95))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
         }
-        .foregroundStyle(.white.opacity(0.95))
-        .padding(.horizontal, 12)
-        .padding(.vertical, 7)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(
-            Capsule().stroke(.white.opacity(0.35), lineWidth: 1)
-        )
+        .glassEffect(.regular.tint(.white.opacity(0.18)).interactive(), in: .capsule)
         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
-        .contentShape(Capsule())
     }
 }
 
@@ -153,6 +152,15 @@ private struct HeaderBackground: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+            
+            // Subtle Liquid Glass scrim for better text readability (iOS 26+)
+            Rectangle()
+                .fill(.clear)
+                .glassEffect(
+                    .regular.tint(.white.opacity(0.5)).interactive(),
+                    in: .rect(cornerRadius: 0)
+                )
+                .allowsHitTesting(false)
         }
         .compositingGroup()
     }
