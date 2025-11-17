@@ -19,18 +19,19 @@ struct WelcomeHubView: View {
             ZStack {
                 GeometryReader { geo in
                     AppBackgroundGradient()
-                        .frame(width: geo.size.width, height: geo.size.height * 1.25, alignment: .center)
-                        .offset(y: -geo.size.height * 0.25)
+                        .frame(width: geo.size.width, height: geo.size.height * 1.14, alignment: .center)
+                        .offset(y: -geo.size.height * 0.07)
                     
                     ConcentricRings()
                         .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
     #if canImport(CoreMotion)
                         // Subtle parallax based on device motion
-                        .offset(x: CGFloat(store.state.roll) * 20, y: -geo.size.height * 0.15 + CGFloat(store.state.pitch) * 20)
+//                        .offset(x: CGFloat(store.state.roll) * 20, y: -geo.size.height * 0.15 + CGFloat(store.state.pitch) * 20)
                         .rotation3DEffect(.degrees(store.state.pitch * 8), axis: (x: 1, y: 0, z: 0), perspective: 0.6)
                         .rotation3DEffect(.degrees(-store.state.roll * 8), axis: (x: 0, y: 1, z: 0), perspective: 0.6)
                         .animation(.smooth(duration: 0.18), value: store.state.pitch)
                         .animation(.smooth(duration: 0.18), value: store.state.roll)
+                        .offset(y: -geo.size.height * 0.07)
     #else
                         .offset(y: -geo.size.height * 0.15)
     #endif
@@ -58,8 +59,8 @@ struct WelcomeHubView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 96, height: 96)
-                                .shadow(color: Color.black.opacity(0.25), radius: 14, y: 6)
-                                .offset(x: CGFloat(store.state.roll) * 20, y: CGFloat(store.state.pitch) * 20)
+//                                .shadow(color: Color.black.opacity(0.25), radius: 14, y: 6)
+//                                .offset(x: CGFloat(store.state.roll) * 20, y: CGFloat(store.state.pitch) * 20)
                                 .rotation3DEffect(.degrees(store.state.pitch * 8), axis: (x: 1, y: 0, z: 0), perspective: 0.6)
                                 .rotation3DEffect(.degrees(-store.state.roll * 8), axis: (x: 0, y: 1, z: 0), perspective: 0.6)
                                 .animation(.smooth(duration: 0.18), value: store.state.pitch)
@@ -67,7 +68,7 @@ struct WelcomeHubView: View {
                         }
                     }
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
-                    .offset(y: -geo.size.height * 0.15)
+                    .offset(y: -geo.size.height * 0.07)
                     .edgesIgnoringSafeArea(.all)
                     
                     // Bottom actions
@@ -117,7 +118,7 @@ struct WelcomeHubView: View {
                         .padding(.top, 4)
                     }
                     .padding(.horizontal, 24)
-                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 16) + 8)
+                    .padding(.bottom, max(geo.safeAreaInsets.bottom, 16))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 }
             }

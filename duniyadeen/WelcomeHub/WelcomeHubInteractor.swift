@@ -5,7 +5,7 @@ final class WelcomeHubInteractor {
     private let manager = CMMotionManager()
     private var filteredRoll: Double = 0
     private var filteredPitch: Double = 0
-    private let smoothingFactor: Double = 0.12 // lower = smoother
+    private let smoothingFactor: Double = 0.1 // lower = smoother
 
     func startMotion(update: @escaping (_ roll: Double, _ pitch: Double) -> Void) {
         guard manager.isDeviceMotionAvailable else { return }

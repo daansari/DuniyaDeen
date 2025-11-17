@@ -417,6 +417,7 @@
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Danish: Your app needs location access to provide features even when not in use.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Danish: Your app needs location access to provide features while in use.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Danish: App to provide voice based functionalities";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Danish: App to provide motion UX";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "App to provide on device model driven speech capabilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -468,6 +469,7 @@
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Danish: Your app needs location access to provide features even when not in use.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Danish: Your app needs location access to provide features while in use.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Danish: App to provide voice based functionalities";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Danish: App to provide motion UX";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "App to provide on device model driven speech capabilities";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
